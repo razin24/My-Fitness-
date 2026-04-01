@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Fitness</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff3b30">
+<link rel="apple-touch-icon" href="icon.png">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Hind+Siliguri:wght@500;600;700&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Hind Siliguri', sans-serif;background:#0a0a0a;color:#f3f4f6;min-height:100vh}
+
+/* Header & Progress */
+.header{background:linear-gradient(to bottom, #1a1a1a, #0a0a0a);padding:35px 20px 25px;text-align:center;border-bottom:2px solid #ff3b30}
+.header h1{font-family:'Teko', sans-serif;font-size:38px;font-weight:700;color:#fff;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;line-height:1}
+.header p{font-size:15px;color:#a1a1aa;margin-bottom:25px;font-weight:600}
+.prog-wrap{max-width:550px;margin:0 auto}
+.prog-bg{background:#27272a;border-radius:8px;height:16px;overflow:hidden;margin-bottom:10px;box-shadow:inset 0 2px 4px rgba(0,0,0,0.5)}
+.prog-fill{height:100%;background:linear-gradient(90deg,#ff3b30,#ff8c00);border-radius:8px;transition:width .4s ease;box-shadow:0 0 10px rgba(255,59,48,0.5)}
+.prog-txt{font-size:15px;font-weight:700;color:#ff8c00;letter-spacing:1px}
+
+/* Stats */
+.stats{display:flex;justify-content:center;gap:20px;padding:20px 15px;background:#121212;border-bottom:1px solid #27272a}
+.stat{text-align:center;flex:1;max-width:110px;background:#1c1c1e;padding:12px;border-radius:10px;border:1px solid #333}
+.stat-n{font-size:26px;font-family:'Teko', sans-serif;font-weight:700;color:#39ff14;line-height:1}
+.stat-l{font-size:13px;color:#a1a1aa;font-weight:600;text-transform:uppercase;margin-top:4px}
+
+/* Controls */
+.controls{background:#0a0a0a;padding:20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;position:sticky;top:0;z-index:100;border-bottom:1px solid #27272a}
+.fbtn{padding:8px 20px;border-radius:6px;border:2px solid #3f3f46;background:#18181b;font-size:14px;cursor:pointer;color:#d4d4d8;transition:all .3s;font-weight:700;font-family:'Hind Siliguri', sans-serif;text-transform:uppercase}
+.fbtn:hover{border-color:#ff3b30;color:#fff}
+.fbtn.active{background:#ff3b30;color:#fff;border-color:#ff3b30;box-shadow:0 0 12px rgba(255,59,48,0.4)}
+
+/* Container & Cards */
+.container{max-width:900px;margin:0 auto;padding:25px 15px 60px}
+.day-group{background:#18181b;border-radius:12px;margin-bottom:30px;border:1px solid #3f3f46;box-shadow:0 8px 20px rgba(0,0,0,0.5);overflow:hidden}
+.day-hdr{background:#27272a;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #ff3b30}
+.day-title{font-size:20px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.5px}
+.day-meta{font-size:15px;color:#39ff14;font-weight:700;background:rgba(57,255,20,0.1);padding:4px 12px;border-radius:20px;border:1px solid #39ff14}
+
+/* Tasks */
+.task-list{padding:10px 0}
+.task-item{display:flex;align-items:flex-start;gap:18px;padding:16px 20px;border-bottom:1px solid #27272a;cursor:pointer;transition:background .2s}
+.task-item:last-child{border-bottom:none}
+.task-item:hover{background:#202024}
+.task-item.done{background:#121212;opacity:0.6}
+.task-item.done .t-text{text-decoration:line-through;color:#71717a}
+
+/* Checkbox */
+.cb{width:28px;height:28px;border-radius:6px;border:2px solid #71717a;background:#0a0a0a;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:4px;transition:all .3s}
+.task-item.done .cb{background:#39ff14;border-color:#39ff14;box-shadow:0 0 10px rgba(57,255,20,0.5)}
+.task-item.done .cb::after{content:'✓';color:#000;font-size:18px;font-weight:900}
+
+/* Text Content */
+.t-num{font-size:16px;font-family:'Teko', sans-serif;font-weight:700;color:#71717a;width:24px;margin-top:5px;text-align:center}
+.t-content{flex:1}
+.t-cat{font-size:12px;font-weight:700;text-transform:uppercase;padding:3px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;letter-spacing:0.5px}
+.t-text{font-size:16px;font-weight:600;color:#fff;line-height:1.5}
+
+.cat-food{background:rgba(57,255,20,0.15);color:#39ff14;border:1px solid #39ff14}
+.cat-gym{background:rgba(255,59,48,0.15);color:#ff3b30;border:1px solid #ff3b30}
+.cat-rec{background:rgba(0,191,255,0.15);color:#00bfff;border:1px solid #00bfff}
+
+/* Button */
+.dl-btn{display:none;} /* PWA তে ডাউনলোড বাটনের প্রয়োজন নেই */
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>My Fitness</h1>
+    <p>4-WEEK MUSCLE BUILDING ROUTINE</p>
+    <div class="prog-wrap">
+        <div class="prog-bg"><div class="prog-fill" id="pgBar" style="width:0%"></div></div>
+        <div class="prog-txt" id="pgTxt">0% COMPLETE</div>
+    </div>
+</div>
+
+<div class="stats">
+    <div class="stat"><div class="stat-n">28</div><div class="stat-l">DAYS</div></div>
+    <div class="stat"><div class="stat-n" id="totalTasks">0</div><div class="stat-l">TASKS</div></div>
+    <div class="stat"><div class="stat-n" id="doneN" style="color:#ff8c00">0</div><div class="stat-l">DONE</div></div>
+</div>
+
+<div class="controls" id="wkBtns">
+    <button class="fbtn active" onclick="filterWeek(null, this)">ALL WEEKS</button>
+</div>
+
+<div class="container" id="planC"></div>
+
+<script>
+// PWA Service Worker Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('Service Worker Registered'))
+      .catch(err => console.log('Service Worker Failed', err));
+  });
+}
+
+const routine = [
+    { name: "রবিবার: চেস্ট ও ট্রাইসেপস", tasks: [
+        { c: "খাবার", t: "প্রি-ওয়ার্কআউট: ২ কলা + ২ ডিম | পোস্ট: ১০০g মুরগি + ভাত/রুটি", type: "food" },
+        { c: "ব্যায়াম", t: "টাস্ক ১: বেঞ্চ প্রেস (৩ সেট x ৮-১২ রেপ)", type: "gym" },
+        { c: "ব্যায়াম", t: "টাস্ক ২: ডাম্বেল ফ্লাই (৩ সেট x ১০-১৫ রেপ)", type: "gym" },
+        { c: "ব্যায়াম", t: "টাস্ক ৩: পুশ-আপ (৩ সেট x ১০-১৫ রেপ)", type: "gym" },
+        { c: "ব্যায়াম", t: "টাস্ক ৪: ট্রাইসেপস ডিপ (৩ সেট x ১০-১২ রেপ)", type: "gym" },
+        { c: "ব্যায়াম", t: "টাস্ক ৫: ট্রাইসেপস পুশডাউন (৩ সেট x ১০-১২ রেপ)", type: "gym" }
+    ]},
+    { name: "সোমবার: ব্যাক ও বাইসেপস", tasks: [
+        { c: "খাবার", t: "প্রি-ওয়ার্কআউট: ওটস + দুধ + ডিম | পোস্ট: ৩ ডিম + ২ রুটি + ১ কলা", type: "food" },
+        { c: "ব্যায়াম", t: "টাস্ক ১: ডেডলিফট (৩ সেট x ৬-১০ রেপ)", type: "gym" },
+        { c: "ব্যায়াম", t: "টাস্ক ২: ল্যাট পুলডাউন/পুল-আপ (৩ সেট x ৮-১২ রেপ)", type: "gym" },
+        { c: "ব্যায়াম", t: "টাস্ক ৩: ডাম্বেল রো (৩ সেট x ১০-১২ রেপ)", type: "gym" },
+        { c: "ব্যায়াম", t: "টাস্ক ৪: বাইসেপস কার্ল (৩ সেট x ১০-১৫ রেপ)", type: "gym" },
+        { c: "ব্যায়াম", t: "টাস্ক ৫: হ্যামার কার্ল (৩ সেট x ১০-১২ রেপ)", type: "gym" }
+    ]},
+    { name: "মঙ্গলবার: বিশ্রাম", tasks: [
+        { c: "খাবার", t: "সারাদিন: ২৫০০-২৮০০ ক্যালরি ও ১০০g প্রোটিন নিশ্চিত করুন", type: "food" },
+        { c: "রিকভারি", t: "টাস্ক ১: সম্পূর্ণ বিশ্রাম ও পর্যাপ্ত পানি পান", type: "rec" }
+    ]},
+    { name: "বুধবার: লেগস ও শোল্ডার", tasks: [
+        { c: "খাবার", t: "প্রি-ওয়ার্কআউট: ২ কলা + ২ ডিম | পোস্ট: ১০০g মুরগি + ভাত/রুটি", type: "food" },
+        { c: "ব্যায়াম", t: "টাস্ক ১: স্কোয়াট (৩ সেট x ৮-১২ রেপ)", type: "gym" },
+        { c: "ব্যায়াম", t: "টাস্ক ২: লাঞ্জেস (৩ সেট x ১০-১২ রেপ প্রতি পা)", type: "gym" },
+        { c: "ব্যায়াম", t: "টাস্ক ৩: ওভারহেড প্রেস (৩ সেট x ৮-১২ রেপ)", type: "gym" },
+        { c: "ব্যায়াম", t: "টাস্ক ৪: ল্যাটারাল রেইজ (৩ সেট x ১২-১৫ রেপ)", type: "gym" }
+    ]},
+    { name: "বৃহস্পতিবার: আর্মস ও ফুল বডি", tasks: [
+        { c: "খাবার", t: "প্রি-ওয়ার্কআউট: ওটস + দুধ + ডিম | পোস্ট: ৩ ডিম + ২ রুটি + ১ কলা", type: "food" },
+        { c: "ব্যায়াম", t: "টাস্ক ১: ডাম্বেল প্রেস (৩ সেট x ১০-১২ রেপ)", type: "gym" },
+        { c: "ব্যায়াম", t: "টাস্ক ২: বাইসেপস কার্ল (৩ সেট x ১০-১৫ রেপ)", type: "gym" },
+        { c: "ব্যায়াম", t: "টাস্ক ৩: ট্রাইসেপস এক্সটেনশন (৩ সেট x ১০-১৫ রেপ)", type: "gym" },
+        { c: "ব্যায়াম", t: "টাস্ক ৪: ফোরআর্মস রিস্ট কার্ল (৩ সেট x ১২-১৫ রেপ)", type: "gym" }
+    ]},
+    { name: "শুক্রবার: বিশ্রাম", tasks: [
+        { c: "খাবার", t: "সারাদিন: প্রোটিন সমৃদ্ধ খাবার ও পর্যাপ্ত ঘুম নিশ্চিত করুন", type: "food" },
+        { c: "রিকভারি", t: "টাস্ক ১: সম্পূর্ণ বিশ্রাম ও বডি রিলাক্সেশন", type: "rec" }
+    ]},
+    { name: "শনিবার: বিশ্রাম", tasks: [
+        { c: "খাবার", t: "সারাদিন: আগামী সপ্তাহের জন্য মিল প্রিপারেশন করুন", type: "food" },
+        { c: "রিকভারি", t: "টাস্ক ১: হালকা স্ট্রেচিং বা সম্পূর্ণ বিশ্রাম", type: "rec" }
+    ]}
+];
+
+let plan = [];
+let checked = JSON.parse(localStorage.getItem('gym_tasks_dark_v1') || '{}');
+let activeWeek = null;
+
+function init() {
+    let globalId = 0;
+    for (let w = 1; w <= 4; w++) {
+        routine.forEach((day, dayIdx) => {
+            let dayTasks = day.tasks.map((t, tIdx) => ({
+                id: globalId++,
+                week: w,
+                dayName: day.name,
+                dayNum: (w - 1) * 7 + (dayIdx + 1),
+                cat: t.c,
+                text: t.t,
+                pos: tIdx + 1,
+                cssClass: 'cat-' + t.type
+            }));
+            plan.push({ week: w, dayNum: (w - 1) * 7 + (dayIdx + 1), name: day.name, tasks: dayTasks });
+        });
+    }
+    
+    const wkBtns = document.getElementById('wkBtns');
+    for (let i = 1; i <= 4; i++) {
+        let btn = document.createElement('button');
+        btn.className = 'fbtn';
+        btn.textContent = `WEEK ${i}`;
+        btn.onclick = (e) => filterWeek(i, e.target);
+        wkBtns.appendChild(btn);
+    }
+    
+    document.getElementById('totalTasks').textContent = globalId;
+    render();
+}
+
+function filterWeek(wk, btn) {
+    activeWeek = wk;
+    document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+}
+
+function toggle(id) {
+    checked[id] = !checked[id];
+    localStorage.setItem('gym_tasks_dark_v1', JSON.stringify(checked));
+    render();
+}
+
+function render() {
+    const cont = document.getElementById('planC');
+    cont.innerHTML = '';
+    
+    let filtered = activeWeek ? plan.filter(p => p.week === activeWeek) : plan;
+    
+    filtered.forEach(day => {
+        let group = document.createElement('div');
+        group.className = 'day-group';
+        
+        let doneInDay = day.tasks.filter(t => checked[t.id]).length;
+        
+        group.innerHTML = `
+            <div class="day-hdr">
+                <div class="day-title">DAY ${day.dayNum}: ${day.name}</div>
+                <div class="day-meta">${doneInDay}/${day.tasks.length}</div>
+            </div>
+            <div class="task-list">
+                ${day.tasks.map(t => `
+                    <div class="task-item ${checked[t.id] ? 'done' : ''}" onclick="toggle(${t.id})">
+                        <div class="t-num">${t.pos}</div>
+                        <div class="cb"></div>
+                        <div class="t-content">
+                            <span class="t-cat ${t.cssClass}">${t.cat}</span>
+                            <div class="t-text">${t.text}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        cont.appendChild(group);
+    });
+    
+    updateStats();
+}
+
+function updateStats() {
+    let total = 0;
+    let done = 0;
+    plan.forEach(d => d.tasks.forEach(t => {
+        total++;
+        if (checked[t.id]) done++;
+    }));
+    
+    let pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    document.getElementById('pgBar').style.width = pct + '%';
+    document.getElementById('pgTxt').textContent = pct + '% COMPLETE';
+    document.getElementById('doneN').textContent = done;
+}
+
+init();
+</script>
+</body>
+</html>
