@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#e63946" />
+  <meta name="description" content="4-week personalized gym workout and nutrition tracker for muscle gain" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MyFitness" />
+
+  <title>My Fitness – Workout & Nutrition Tracker</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ===== Header ===== -->
+  <header class="app-header">
+    <div class="logo">MY<span>FITNESS</span></div>
+    <div class="header-meta">
+      <div id="header-date">Today</div>
+      <div id="streak-wrap"></div>
+    </div>
+  </header>
+
+  <!-- ===== Main content ===== -->
+  <main class="main-content">
+
+    <!-- HOME / DASHBOARD -->
+    <section id="section-home" class="section active">
+
+      <div class="week-banner">
+        <h2 id="home-week-title">Week 1</h2>
+        <p id="home-week-sub">Foundation Phase – Building the Base</p>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-workouts-done">0</div>
+          <div class="stat-label">Workouts Done</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-streak">0🔥</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-calories-today">0</div>
+          <div class="stat-label">Calories Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-week-progress">0%</div>
+          <div class="stat-label">Week Progress</div>
+        </div>
+      </div>
+
+      <!-- Today's Workout -->
+      <div class="card today-workout">
+        <div class="card-header">
+          <span class="card-title">Today's Workout</span>
+          <button class="btn btn-primary btn-sm" onclick="App.goToWorkout()">View →</button>
+        </div>
+        <div id="today-workout-name" style="font-weight:700; font-size:1rem;"></div>
+        <div id="today-workout-exercises" class="exercise-preview"></div>
+      </div>
+
+      <!-- Calorie summary -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Today's Nutrition</span>
+          <button class="btn btn-outline btn-sm" onclick="App.navigate('nutrition')">Add Meal</button>
+        </div>
+
+        <div class="calorie-ring-wrap">
+          <div class="calorie-ring">
+            <svg viewBox="0 0 90 90">
+              <circle class="ring-bg" cx="45" cy="45" r="36" />
+              <circle class="ring-fill" id="home-ring-fill" cx="45" cy="45" r="36" />
+            </svg>
+            <div class="ring-text">
+              <span class="cal-num" id="home-cal-consumed">0</span>
+              <span class="cal-unit">kcal</span>
+            </div>
+          </div>
+          <div class="calorie-info">
+            <div class="cal-goal" id="home-cal-goal-text">Goal: 2500 kcal</div>
+            <div class="cal-remaining" id="home-cal-remaining">2500 remaining</div>
+            <div class="progress-bar-wrap" style="margin-top:8px">
+              <div class="progress-bar-fill" id="home-cal-bar" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="macro-row">
+          <div class="macro-item">
+            <div class="macro-label">Protein</div>
+            <div class="macro-value protein" id="home-protein">0g</div>
+          </div>
+          <div class="macro-item">
+            <div class="macro-label">Carbs</div>
+            <div class="macro-value carbs" id="home-carbs">0g</div>
+          </div>
+          <div class="macro-item">
+            <div class="macro-label">Fat</div>
+            <div class="macro-value fat" id="home-fat">0g</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly workout progress -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Weekly Workout Plan</span>
+        </div>
+        <div id="home-week-plan"></div>
+      </div>
+
+    </section>
+
+    <!-- WORKOUT SECTION -->
+    <section id="section-workout" class="section">
+      <div class="section-title"><span class="emoji">💪</span> 4-Week Program</div>
+
+      <!-- Week tabs -->
+      <div class="week-tabs" id="week-tabs"></div>
+
+      <!-- Days for selected week -->
+      <div id="workout-days"></div>
+    </section>
+
+    <!-- NUTRITION SECTION -->
+    <section id="section-nutrition" class="section">
+      <div class="section-title"><span class="emoji">🥗</span> Nutrition</div>
+
+      <!-- Calorie ring card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Daily Calories</span>
+          <span id="nutr-date" style="font-size:0.78rem;color:var(--text-secondary)"></span>
+        </div>
+
+        <div class="calorie-ring-wrap">
+          <div class="calorie-ring">
+            <svg viewBox="0 0 90 90">
+              <circle class="ring-bg" cx="45" cy="45" r="36" />
+              <circle class="ring-fill" id="nutr-ring-fill" cx="45" cy="45" r="36" />
+            </svg>
+            <div class="ring-text">
+              <span class="cal-num" id="nutr-cal-consumed">0</span>
+              <span class="cal-unit">kcal</span>
+            </div>
+          </div>
+          <div class="calorie-info">
+            <div class="cal-goal" id="nutr-cal-goal-text">Goal: 2500 kcal</div>
+            <div class="cal-remaining" id="nutr-cal-remaining">2500 remaining</div>
+          </div>
+        </div>
+
+        <!-- Macro bars -->
+        <div style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px;">
+              <span style="color:#e63946">Protein</span>
+              <span id="nutr-protein-text">0 / 180g</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" id="nutr-protein-bar" style="width:0%"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px;">
+              <span style="color:#f4a261">Carbs</span>
+              <span id="nutr-carbs-text">0 / 300g</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill orange" id="nutr-carbs-bar" style="width:0%"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px;">
+              <span style="color:#457b9d">Fat</span>
+              <span id="nutr-fat-text">0 / 80g</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill" id="nutr-fat-bar" style="width:0%;background:#457b9d"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add meal card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Log a Meal</span>
+        </div>
+        <div class="add-meal-form">
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label>Food / Meal Name</label>
+              <input type="text" id="meal-name-input" placeholder="e.g. Chicken & Rice" />
+            </div>
+            <div class="form-group">
+              <label>Meal Type</label>
+              <select id="meal-type-input">
+                <option value="🌅">Breakfast</option>
+                <option value="☀️">Lunch</option>
+                <option value="🌙">Dinner</option>
+                <option value="🍎">Snack</option>
+                <option value="🥤">Shake</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Calories (kcal)</label>
+              <input type="number" id="meal-cal-input" placeholder="500" min="0" />
+            </div>
+            <div class="form-group">
+              <label>Protein (g)</label>
+              <input type="number" id="meal-protein-input" placeholder="40" min="0" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Carbs (g)</label>
+              <input type="number" id="meal-carbs-input" placeholder="60" min="0" />
+            </div>
+            <div class="form-group">
+              <label>Fat (g)</label>
+              <input type="number" id="meal-fat-input" placeholder="15" min="0" />
+            </div>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="App.addMeal()">Add Meal</button>
+        </div>
+      </div>
+
+      <!-- Quick add common foods -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Quick Add</span>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="App.quickAdd('Chicken Breast 150g',247,46,0,5)">🍗 Chicken</button>
+          <button class="btn btn-outline btn-sm" onclick="App.quickAdd('White Rice 200g',260,5,56,1)">🍚 Rice</button>
+          <button class="btn btn-outline btn-sm" onclick="App.quickAdd('Eggs x3',210,18,2,15)">🥚 Eggs x3</button>
+          <button class="btn btn-outline btn-sm" onclick="App.quickAdd('Protein Shake',150,25,8,3)">🥤 Shake</button>
+          <button class="btn btn-outline btn-sm" onclick="App.quickAdd('Oats 80g',300,10,54,6)">🥣 Oats</button>
+          <button class="btn btn-outline btn-sm" onclick="App.quickAdd('Banana',89,1,23,0)">🍌 Banana</button>
+          <button class="btn btn-outline btn-sm" onclick="App.quickAdd('Tuna Can 160g',150,34,0,1)">🐟 Tuna</button>
+          <button class="btn btn-outline btn-sm" onclick="App.quickAdd('Greek Yogurt 200g',120,17,9,0)">🫙 Yogurt</button>
+        </div>
+      </div>
+
+      <!-- Water intake -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Water Intake</span>
+          <span id="water-total" style="font-size:0.85rem;color:var(--info);font-weight:700;">0 / 8 glasses</span>
+        </div>
+        <div class="water-tracker" id="water-tracker"></div>
+      </div>
+
+      <!-- Meal log -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Today's Log</span>
+          <button class="btn btn-outline btn-sm" onclick="App.clearMeals()" style="color:var(--accent);border-color:var(--accent)">Clear</button>
+        </div>
+        <div class="meal-log" id="meal-log"></div>
+      </div>
+
+    </section>
+
+    <!-- PROGRESS SECTION -->
+    <section id="section-progress" class="section">
+      <div class="section-title"><span class="emoji">📈</span> Progress</div>
+
+      <!-- Weight log card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Body Weight</span>
+        </div>
+        <div class="weight-input-row">
+          <div class="form-group">
+            <label>Today's Weight (kg)</label>
+            <input type="number" id="weight-input" placeholder="75.0" step="0.1" min="30" max="300" />
+          </div>
+          <button class="btn btn-primary" onclick="App.logWeight()" style="margin-bottom:0;align-self:flex-end">Log</button>
+        </div>
+
+        <!-- Simple SVG chart -->
+        <div class="progress-chart" id="weight-chart-wrap">
+          <canvas id="weight-chart" width="400" height="150"></canvas>
+        </div>
+
+        <div class="progress-log" id="weight-log"></div>
+      </div>
+
+      <!-- 4-week program overview -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Program Overview</span>
+        </div>
+        <div id="program-overview"></div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Achievements</span>
+        </div>
+        <div class="achievement-list" id="achievement-list"></div>
+      </div>
+
+    </section>
+
+    <!-- SETTINGS SECTION -->
+    <section id="section-settings" class="section">
+      <div class="section-title"><span class="emoji">⚙️</span> Settings</div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Profile</span>
+        </div>
+        <div class="form-group" style="margin-bottom:10px">
+          <label>Your Name</label>
+          <input type="text" id="setting-name" placeholder="Enter your name" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Body Weight (kg)</label>
+            <input type="number" id="setting-weight" placeholder="75" min="30" max="300" />
+          </div>
+          <div class="form-group">
+            <label>Height (cm)</label>
+            <input type="number" id="setting-height" placeholder="175" min="100" max="250" />
+          </div>
+        </div>
+        <div class="form-row" style="margin-top:10px">
+          <div class="form-group">
+            <label>Goal Calories (kcal)</label>
+            <input type="number" id="setting-calories" placeholder="2500" min="1200" max="6000" />
+          </div>
+          <div class="form-group">
+            <label>Program Week</label>
+            <select id="setting-week">
+              <option value="1">Week 1</option>
+              <option value="2">Week 2</option>
+              <option value="3">Week 3</option>
+              <option value="4">Week 4</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" style="margin-top:14px" onclick="App.saveSettings()">Save Profile</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Macro Goals</span>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Protein Goal (g)</label>
+            <input type="number" id="setting-protein" placeholder="180" min="50" max="400" />
+          </div>
+          <div class="form-group">
+            <label>Carbs Goal (g)</label>
+            <input type="number" id="setting-carbs" placeholder="300" min="50" max="600" />
+          </div>
+          <div class="form-group">
+            <label>Fat Goal (g)</label>
+            <input type="number" id="setting-fat" placeholder="80" min="20" max="200" />
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" style="margin-top:14px" onclick="App.saveMacros()">Save Macros</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">App Settings</span>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Notifications</div>
+            <div class="setting-desc">Workout & meal reminders</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="setting-notifications" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Offline Mode</div>
+            <div class="setting-desc">Service Worker active</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="setting-offline" checked disabled />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Data</span>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Reset All Data</div>
+            <div class="setting-desc">Clears workouts, meals, and weight logs</div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="App.resetData()" style="color:var(--accent);border-color:var(--accent)">Reset</button>
+        </div>
+        <div class="setting-row" style="border-bottom:none">
+          <div>
+            <div class="setting-label">App Version</div>
+            <div class="setting-desc">v1.0.0</div>
+          </div>
+          <span style="font-size:0.78rem;color:var(--text-muted)">PWA</span>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ===== Bottom Navigation ===== -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="nav-home" onclick="App.navigate('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      Home
+    </button>
+    <button class="nav-btn" id="nav-workout" onclick="App.navigate('workout')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6.5 6.5h11M6.5 17.5h11M3 12h18M3 12l4-4M3 12l4 4M21 12l-4-4M21 12l-4 4"/>
+      </svg>
+      Workout
+    </button>
+    <button class="nav-btn" id="nav-nutrition" onclick="App.navigate('nutrition')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 6v6l4 2"/>
+      </svg>
+      Nutrition
+    </button>
+    <button class="nav-btn" id="nav-progress" onclick="App.navigate('progress')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+      Progress
+    </button>
+    <button class="nav-btn" id="nav-settings" onclick="App.navigate('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+      Settings
+    </button>
+  </nav>
+
+</div>
+
+<!-- Snackbar -->
+<div class="snackbar" id="snackbar"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
